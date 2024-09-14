@@ -8,6 +8,25 @@
     <script src="./js/app.js" type="module"></script>
 </head>
 <body>
-    
+    <div class="container-xxl">
+        <div class="search-form">
+            <form class="search-form__form" id="search-form" class="d-flex mb-4">
+                <input class="search-form__input form-control me-2" type="search" placeholder="Enter city" aria-label="Search" id="city-search-input" name="city" autocomplete="off">
+                <button class="search-form__button btn btn-outline-secondary" type="submit">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                      <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
+                    </svg>
+                </button>
+            </form>
+            <ul class="search-form__suggestions dropdown-menu list-group position-absolute w-100" id="city-suggestions"></ul>
+        </div>
+
+        <div class="border rounded p-4">
+            <h3 id="city-name">City Name</h3>
+            <p id="current-date">Today's Date</p>
+            <p id="temperature">Temperature: 0°C</p>
+        </div>
+        
+    </div>
 </body>
 </html>

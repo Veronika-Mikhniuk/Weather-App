@@ -1,1 +1,30 @@
-@import "bootstrap/scss/bootstrap"
+@import "bootstrap/scss/bootstrap";
+
+.search-form {
+    position: relative;
+    &__form {
+        display: flex;
+    }
+    &__suggestions {
+        display: none;
+        list-style-type: none;
+        top: 100%;
+        z-index: 1000;
+
+        // Modificator for showing suggestions
+        &_active {
+            display: block;
+            max-height: 140px;
+            overflow-y: auto; // Scroll
+            cursor: pointer;
+            
+            li {
+                &:hover {
+                    background-color: #f0f0f0;
+                }
+            }
+
+            
+        }
+    }
+}
