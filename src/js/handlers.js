@@ -1,14 +1,16 @@
+import { Popover } from 'bootstrap'
+
 import {
-    getGeoData,
-    getCurrentWeather
+    getGeoData
 } from './requests.js'
 
 import {
+    formWeatherData,
     renderWeather,
     showCitySuggestion
 } from './methods.js'
 
-let citySelected = false //флаг для отправки формы только после выбора города
+let citySelected = false // flag for submitting the form only after selecting the city
 
 async function handleChangeInputCityName() {
     const cityName = document.querySelector('#city-search-input').value.trim()
@@ -32,23 +34,29 @@ async function handleChangeInputCityName() {
 
 async function handleSubmitFormSearchCity(event) {
     event.preventDefault()
+    const cityName = document.querySelector('#city-search-input')
 
     if (citySelected) {
-        const cityName = document.querySelector('#city-search-input')
         const { latitude, longitude } = cityName.dataset
 
         try {
-            const currentWeatherData = await getCurrentWeather(latitude, longitude)
-            const { temperature } = currentWeatherData.current_weather
-            renderWeather(cityName.value, temperature)
+            const weatherData = await formWeatherData(latitude, longitude)
+            
+            renderWeather(weatherData)
         }
         catch (error) {
             console.error('Ошибка при получении данных:', error)
             alert('Не удалось получить данные, попробуйте позже.')
         }
         cityName.value = ''
+        citySelected = false
     } else {
-        alert('Выберите город из списка.') /// изменить здесь на поповер, высплывающий на две секундв
+        const popover = new Popover(cityName)
+        popover.show()
+
+        setTimeout(() => {
+            popover.hide()
+        }, 2000)
     }
 }
 
@@ -62,8 +70,8 @@ function handleClickDropdownMenu({ target }) {
     document.querySelector('#city-suggestions').classList.remove('search-form__suggestions_active')
 }
 
-function handleClickOutsideCityList({ target }) { 
-    if(!target.closest('.search-form__suggestions') && !target.closest('.search-form__input')) {
+function handleClickOutsideCityList({ target }) {
+    if (!target.closest('.search-form__suggestions') && !target.closest('.search-form__input')) {
         document.querySelector('#city-suggestions').classList.remove('search-form__suggestions_active')
     }
 }

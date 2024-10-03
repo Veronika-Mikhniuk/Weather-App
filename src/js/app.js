@@ -1,5 +1,3 @@
-import { Modal } from 'bootstrap'
-
 import {
     searchForm,
     suggestionCityList
@@ -18,8 +16,8 @@ import {
 
 
 // add event listeners
-// событие input для мгновеного перехвата изменений, так как change будет срабатывать только при потере фокуса
-// ставим задержку, чтоб предотвратить множественные запросы
+// the "input" event is for instant interception of changes, since "change" will be triggered only when focus is lost
+// set a delay to prevent multiple requests
 searchForm.addEventListener('input', () => { debounce(handleChangeInputCityName, 1000) })
 searchForm.addEventListener('submit', handleSubmitFormSearchCity)
 suggestionCityList.addEventListener('click', handleClickDropdownMenu)
