@@ -62,6 +62,7 @@
                 color: rgb(100, 100, 100);
                 font-weight: 400;
                 font-size: 18px;
+
                 &:hover {
                     color: rgb(100, 100, 100);
                     background-color: #f0f0f0;
@@ -90,7 +91,8 @@ h1 {
     line-height: 55px;
 }
 
-h1, h2 {
+h1,
+h2 {
     font-weight: 200 !important;
 }
 
@@ -124,7 +126,7 @@ body::before {
     padding: 7px 9px;
     font-size: 18px;
     font-weight: 400;
-    color:  gray;
+    color: gray;
 }
 
 .popover {
@@ -145,8 +147,8 @@ body::before {
     &__content {
         display: flex;
         flex-grow: 1;
-        flex-basis: 70%;
-        max-width: 800px;
+        flex-basis: 56.4%;
+        // max-width: 735px;
     }
 
     &__current {
@@ -166,7 +168,7 @@ body::before {
         display: flex;
         gap: 20px;
         flex-grow: 1;
-        flex-basis: 30%;
+        flex-basis: 42%;
     }
 
     &__daily {
@@ -179,8 +181,8 @@ body::before {
 }
 
 .current {
-
     // стили для блока текущей погоды
+
     &__city {
         /* ... */
     }
@@ -192,6 +194,8 @@ body::before {
     &__info {
         display: flex;
         align-items: end;
+        position: relative;
+        margin-top: 20px;
     }
 
     &__temp {
@@ -208,13 +212,20 @@ body::before {
     }
 
     &__icon {
-        /* ... */
+        position: absolute;
+        bottom: 0;
+        left: 170px;
+
+        img {
+            width: 220px;
+        }
     }
 
     &__other-params {
         display: flex;
         flex-direction: column;
         justify-content: space-between;
+        gap: 20px;
     }
 
     &__params {
@@ -222,7 +233,10 @@ body::before {
         gap: 30px;
     }
 
-    &__param-names, &__param-values, &__sunrise, &__sunset{
+    &__param-names,
+    &__param-values,
+    &__sunrise,
+    &__sunset {
         min-width: 80px;
     }
 
@@ -244,36 +258,49 @@ body::before {
 
 .summary {
     background-color: rgba(54, 128, 193, 0.408);
-    // background-color: rgba(255, 255, 255, 0.205);
     border-radius: 20px;
-    padding: 10px;
-    max-width: 240px;
+    padding: 20px;
+    // max-width: 262px;
     flex-grow: 1;
     flex-basis: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 
 
-    // &__title {
-    //     /* ... */
-    // }
+    &__title {
+        text-align: center;
+    }
 
-    // &__max,
-    // &__min {
-    //     /* ... */
-    // }
+    &__max,
+    &__min {
+        display: flex;
+        justify-content: space-between;
+    }
 
     // &__info {
     //     /* ... */
     // }
 
-    // &__temp {
-    //     /* ... */
-    // }
+    &__temp {
+        font-size: 48px;
+        line-height: 40px;
+    }
 
-    // &__desc {
-    //     /* ... */
-    // }
+    &__desc {
+        text-transform: uppercase;
+        font-size: 15px;
+    }
 
-    // &__icon {
-    //   
-    // }
+    img {
+        width: 90px;
+        position: absolute;
+        right: 0;
+        top: 40%;
+        transform: translate(0, -50%);
+    }
+
+    &__icon {
+        position: relative;
+    }
 }

@@ -11,8 +11,8 @@ import {
 // Import of Weather Icons
 import sunriseIcon from '../sass/img/Icons/sunrise.svg'
 import sunsetIcon from '../sass/img/Icons/sunset.svg'
-import cloudyIcon from '../sass/img/Icons/partly-cloudy-day.svg';
-import rainIcon from '../sass/img/Icons/rain.png';
+import cloudyIcon from '../sass/img/Icons/partly-cloudy-day.svg'
+import rainIcon from '../sass/img/Icons/rain.png'
 
 let citySelected  // flag for resetting the status so that the city list drops out without refreshing the page
 let debounceTimer // to save the timer ID for the possibility of cancellation
@@ -29,13 +29,13 @@ function getCurrentDate() {
 
 async function formWeatherData(latitude, longitude) {
     const currentWeatherData = await getCurrentWeather(latitude, longitude)
+    console.log(currentWeatherData)
 
     const cityName = document.querySelector('#city-search-input')
     const { temperature, weather_code, wind_speed_10m: wind, relative_humidity_2m: humidity, surface_pressure: pressure } = currentWeatherData.current
     const [sunrise] = currentWeatherData.daily.sunrise
     const [sunset] = currentWeatherData.daily.sunset
     const [uv_index] = currentWeatherData.daily.uv_index_max
-
     let currentTimeDate = currentWeatherData.current.time
     let currentTime = currentTimeDate.slice(-5, -3)
 
@@ -45,9 +45,30 @@ async function formWeatherData(latitude, longitude) {
 
     const visibility = currentWeatherData.hourly.visibility[currentTime]
 
+    const todayDate = currentWeatherData.daily.time[0]
+    const tomorrowDate = currentWeatherData.daily.time[1]
+    const todayTempMax = currentWeatherData.daily.temperature_2m_max[0]
+    const todayTempMin = currentWeatherData.daily.temperature_2m_min[0]
+    const tomorrowTempMax = currentWeatherData.daily.temperature_2m_max[1]
+    const tomorrowTempMin = currentWeatherData.daily.temperature_2m_min[1]
+
+    const weatherCodesByPeriods = getWeatherCodesByPeriods(
+        currentWeatherData.hourly.time,
+        currentWeatherData.hourly.weather_code,
+        [todayDate, tomorrowDate]
+    )
+
     return {
         cityName: cityName.value,
         temperature,
+        todayTempMax,
+        todayTempMin,
+        todayDayWeatherCode: weatherCodesByPeriods[todayDate].dayTime,
+        todayNightWeatherCode: weatherCodesByPeriods[todayDate].nightTime,
+        tomorrowTempMax,
+        tomorrowTempMin,
+        tomorrowDayWeatherCode: weatherCodesByPeriods[tomorrowDate].dayTime,
+        tomorrowNightWeatherCode: weatherCodesByPeriods[tomorrowDate].nightTime,
         weather_code,
         sunrise,
         sunset,
@@ -97,10 +118,83 @@ function getWeatherByCode(code) { // change to relative icons
     return weatherDescription
 }
 
+function groupWeatherCodeByPeriod(hourlyTimes, weatherCodes, dateStr) {
+    const periods = {
+        dayTime: [6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21],
+        nightTime: [22, 23, 0, 1, 2, 3, 4, 5]
+    }
+
+    const result = {
+        dayTime: [],
+        nightTime: []
+    }
+
+    hourlyTimes.forEach((time, index) => {
+        if (time.startsWith(dateStr)) {
+            const hour = parseInt(time.slice(-5, -3))
+
+            // Determine what period the hour belongs to
+            for (const [period, hours] of Object.entries(periods)) {
+                if (hours.includes(hour)) {
+                    result[period].push(weatherCodes[index])
+                    break
+                }
+            }
+        }
+    })
+
+    return result
+}
+
+function getMostFrequentCode(codes) {
+    if (!codes || codes.length === 0) return 0
+
+    const frequency = {}
+    let maxFreq = 0
+    let mostFrequentCode = codes[0]
+
+    codes.forEach(code => {
+        frequency[code] = (frequency[code] || 0) + 1
+        if (frequency[code] > maxFreq) {
+            maxFreq = frequency[code]
+            mostFrequentCode = code
+        }
+    })
+
+    return mostFrequentCode;
+}
+
+function getWeatherCodesByPeriods(hourlyTimes, weatherCodes, dates) {
+    const result = {}
+
+    dates.forEach(date => {
+        const periodCodes = groupWeatherCodeByPeriod(hourlyTimes, weatherCodes, date)
+
+        result[date] = {
+            dayTime: getMostFrequentCode(periodCodes.dayTime),
+            nightTime: getMostFrequentCode(periodCodes.nightTime)
+        }
+    })
+
+    return result
+}
+
 function getIconBasedOnTime(weathercode, currentTime, sunrise, sunset) {
     const currentTimeDate = new Date(currentTime)
     const sunriseDate = new Date(sunrise)
     const sunsetDate = new Date(sunset)
+
+    console.log(currentTimeDate, sunriseDate, sunsetDate)
+
+    if (currentTimeDate >= sunriseDate && currentTimeDate < sunsetDate) {
+        return getWeatherByCode(weathercode).iconDay // DayIcon
+    } else {
+        return getWeatherByCode(weathercode).iconNight // NightIcon
+    }
+}
+
+function getIconDay(weathercode) {
+
 
     if (currentTimeDate >= sunriseDate && currentTimeDate < sunsetDate) {
         return getWeatherByCode(weathercode).iconDay // DayIcon
@@ -112,6 +206,14 @@ function getIconBasedOnTime(weathercode, currentTime, sunrise, sunset) {
 function renderWeather({
     cityName,
     temperature,
+    todayTempMax,
+    todayTempMin,
+    todayDayWeatherCode,
+    todayNightWeatherCode,
+    tomorrowTempMax,
+    tomorrowTempMin,
+    tomorrowDayWeatherCode,
+    tomorrowNightWeatherCode,
     weather_code,
     sunrise,
     sunset,
@@ -139,7 +241,20 @@ function renderWeather({
         sunsetIconUrl: sunsetIcon
     })
 
-    const weatherSummaryHTML = buildTemplateWeatherSummary()
+    const weatherSummaryHTML = buildTemplateWeatherSummary({
+        todayTempMax,
+        todayTempMin,
+        tomorrowTempMax,
+        tomorrowTempMin,
+        todayDayWeatherDescription: getWeatherByCode(todayDayWeatherCode).description.toUpperCase(),
+        todayNightWeatherDescription: getWeatherByCode(todayNightWeatherCode).description.toUpperCase(),
+        tomorrowDayWeatherDescription: getWeatherByCode(tomorrowDayWeatherCode).description.toUpperCase(),
+        tomorrowNightWeatherDescription: getWeatherByCode(tomorrowNightWeatherCode).description.toUpperCase(),
+        todayDayIcon: getWeatherByCode(todayDayWeatherCode).iconDay,
+        todayNightIcon: getWeatherByCode(todayNightWeatherCode).iconNight,
+        tomorrowDayIcon: getWeatherByCode(tomorrowDayWeatherCode).iconDay,
+        tomorrowNightIcon: getWeatherByCode(tomorrowNightWeatherCode).iconNight
+    })
 
     // Insertion
     const mainWeatherBlock = document.querySelector('.weather__main')

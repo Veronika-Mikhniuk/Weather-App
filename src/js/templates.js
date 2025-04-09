@@ -76,27 +76,40 @@ const buildTemplateWeatherCurrent = ({
         </div>`
 }
 
-const buildTemplateWeatherSummary = () => {
+const buildTemplateWeatherSummary = ({
+    todayTempMax,
+    todayTempMin,
+    tomorrowTempMax,
+    tomorrowTempMin,
+    todayDayWeatherDescription,
+    todayNightWeatherDescription,
+    tomorrowDayWeatherDescription,
+    tomorrowNightWeatherDescription,
+    todayDayIcon,
+    todayNightIcon,
+    tomorrowDayIcon,
+    tomorrowNightIcon
+}) => {
     return `
         <div class="weather__summary">
             <div class="summary summary__today">
                 <h2 class="summary__title">TODAY</h2>
                 <div class="summary__max">
                     <div class="summary__info">
-                        <p class="summary__temp">23°C</p>
-                        <p class="summary__desc">Partlu cloudy</p>
+                        <p class="summary__temp">${todayTempMax}°C</p>
+                        <p class="summary__desc">${todayDayWeatherDescription}</p>
                     </div>
                     <div class="summary__icon">
-                        <div class="weather-icon">🌤️</div>
+                        <img src="${todayDayIcon}" alt="Today day icon">
                     </div>
                 </div>
                 <div class="summary__min">
                     <div class="summary__info">
-                        <p class="summary__temp">13°C</p>
-                        <p class="summary__desc">Partlu cloudy</p>
+                        <p class="summary__temp">${todayTempMin}°C</p>
+                        <p class="summary__desc">${todayNightWeatherDescription}</p>
                     </div>
                     <div class="summary__icon">
-                        <div class="weather-icon">🌤️</div>
+                        <img src="${todayNightIcon}" alt="Today night icon">
                     </div>
                 </div>
             </div>
@@ -104,20 +117,20 @@ const buildTemplateWeatherSummary = () => {
                 <h2 class="summary__title">TOMORROW</h2>
                 <div class="summary__max">
                     <div class="summary__info">
-                        <p class="summary__temp">23°C</p>
-                        <p class="summary__desc">Partlu cloudy</p>
+                        <p class="summary__temp">${tomorrowTempMax}°C</p>
+                        <p class="summary__desc">${tomorrowDayWeatherDescription}</p>
                     </div>
                     <div class="summary__icon">
-                        <div class="weather-icon">🌤️</div>
+                        <img src="${tomorrowDayIcon}" alt="Tomorrow day icon">
                     </div>
                 </div>
                 <div class="summary__min">
                     <div class="summary__info">
-                        <p class="summary__temp">13°C</p>
-                        <p class="summary__desc">Partlu cloudy</p>
+                        <p class="summary__temp">${tomorrowTempMin}°C</p>
+                        <p class="summary__desc">${tomorrowNightWeatherDescription}</p>
                     </div>
                     <div class="summary__icon">
-                        <div class="weather-icon">🌤️</div>
+                        <img src="${tomorrowNightIcon}" alt="Tomorrow night icon">
                     </div>
                 </div>
             </div>
