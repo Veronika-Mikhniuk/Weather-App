@@ -139,8 +139,8 @@ const buildTemplateWeatherHourly = (hourlyItems) => {
         <div class="weather__hourly-wrapper">
             ${hourlyItems}
         </div>
-    `;
-};
+    `
+}
 
 const buildTemplateWeatherHourlyItem = ({ hour, temp, weatherIconUrl }) => {
     return `
@@ -154,10 +154,35 @@ const buildTemplateWeatherHourlyItem = ({ hour, temp, weatherIconUrl }) => {
     `
 }
 
+const buildTemplateWeatherDaily = (dailyItems) => {
+    return `
+        <div class="weather__daily-wrapper">
+            ${dailyItems}
+        </div>
+    `
+}
+
+const buildTemplateWeatherDailyItem = ({ day, tempMax, tempMin, weatherIconUrl }) => {
+    return `
+        <div class="daily daily__item">
+            <h2 class="daily__week-day">${day}</h2>
+            <div class="daily__icon">
+                <img src="${weatherIconUrl}" alt="Daily icon">
+            </div>
+            <div class="daily__temp">
+                <p class="daily__temp-max">${tempMax}°C</p>
+                <p class="daily__temp-min">${tempMin}°C</p>
+            </div>
+        </div>
+    `
+}
+
 export {
     buildTemplateCitySuggestion,
     buildTemplateWeatherCurrent,
     buildTemplateWeatherSummary,
     buildTemplateWeatherHourly,
-    buildTemplateWeatherHourlyItem
+    buildTemplateWeatherHourlyItem,
+    buildTemplateWeatherDaily,
+    buildTemplateWeatherDailyItem
 }

@@ -155,7 +155,8 @@ body::before {
     }
 
     &__current,
-    &__hourly-wrapper {
+    &__hourly-wrapper,
+    &__daily-wrapper {
         display: flex;
         background-color: rgba(54, 128, 193, 0.408);
         border-radius: 20px;
@@ -163,8 +164,6 @@ body::before {
         justify-content: space-between;
         width: 100%;
     }
-
-    // &__hourly-wrapper {}
 
     &__summary {
         display: flex;
@@ -315,5 +314,27 @@ body::before {
             width: 70px;
         }
     }
+}
 
+.daily {
+    &__item {
+        display: flex;
+        flex-direction: column;
+        gap: 13px;
+        align-items: center;
+    }
+
+    &__week-day,
+    &__temp-max,
+    &__temp-min {
+        font-size: 32px;
+        line-height: 40px;
+        margin-bottom: 0;
+    }
+
+    &__icon {
+        img {
+            width: 90px;
+        }
+    }
 }

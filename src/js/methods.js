@@ -3,7 +3,9 @@ import {
     buildTemplateWeatherCurrent,
     buildTemplateWeatherSummary,
     buildTemplateWeatherHourly,
-    buildTemplateWeatherHourlyItem
+    buildTemplateWeatherHourlyItem,
+    buildTemplateWeatherDaily,
+    buildTemplateWeatherDailyItem
 } from './templates.js'
 
 import {
@@ -37,7 +39,8 @@ async function formWeatherData(latitude, longitude) {
     console.log(currentWeatherData)
 
     const cityName = document.querySelector('#city-search-input')
-    const { temperature, weather_code, wind_speed_10m: wind, relative_humidity_2m: humidity, surface_pressure: pressure } = currentWeatherData.current
+    const { weather_code, wind_speed_10m: wind, relative_humidity_2m: humidity, surface_pressure: pressure } = currentWeatherData.current
+    const temperature = Math.round(currentWeatherData.current.temperature)
     const [sunrise] = currentWeatherData.daily.sunrise
     const [sunset] = currentWeatherData.daily.sunset
     const [uv_index] = currentWeatherData.daily.uv_index_max
@@ -52,10 +55,10 @@ async function formWeatherData(latitude, longitude) {
 
     const todayDate = currentWeatherData.daily.time[0]
     const tomorrowDate = currentWeatherData.daily.time[1]
-    const todayTempMax = currentWeatherData.daily.temperature_2m_max[0]
-    const todayTempMin = currentWeatherData.daily.temperature_2m_min[0]
-    const tomorrowTempMax = currentWeatherData.daily.temperature_2m_max[1]
-    const tomorrowTempMin = currentWeatherData.daily.temperature_2m_min[1]
+    const todayTempMax = Math.round(currentWeatherData.daily.temperature_2m_max[0])
+    const todayTempMin = Math.round(currentWeatherData.daily.temperature_2m_min[0])
+    const tomorrowTempMax = Math.round(currentWeatherData.daily.temperature_2m_max[1])
+    const tomorrowTempMin = Math.round(currentWeatherData.daily.temperature_2m_min[1])
 
     const weatherCodesByPeriods = getWeatherCodesByPeriods(
         currentWeatherData.hourly.time,
@@ -65,8 +68,15 @@ async function formWeatherData(latitude, longitude) {
 
     const todayHourlyTimeFull = currentWeatherData.hourly.time.slice(hourlyWeatherStartTime, hourlyWeatherStartTime + hourlyWeatherHoursToDisplay)
     const todayHourlyTimeShort = todayHourlyTimeFull.map(timeDate => timeDate.slice(-5, -3))
-    const todayHourlyTemperature = currentWeatherData.hourly.temperature_2m.slice(hourlyWeatherStartTime, hourlyWeatherStartTime + hourlyWeatherHoursToDisplay)
+    const todayHourlyTemperature = currentWeatherData.hourly.temperature_2m
+        .slice(hourlyWeatherStartTime, hourlyWeatherStartTime + hourlyWeatherHoursToDisplay)
+        .map(temp => Math.round(temp))
     const todayHourlyWeatherCode = currentWeatherData.hourly.weather_code.slice(hourlyWeatherStartTime, hourlyWeatherStartTime + hourlyWeatherHoursToDisplay)
+
+    const dailyWeekDays = currentWeatherData.daily.time.map((day) => getShortWeekDay(day))
+    const dailyWeatherCode = currentWeatherData.daily.weather_code
+    const dailyTempMax = currentWeatherData.daily.temperature_2m_max.map(temp => Math.round(temp))
+    const dailyTempMin = currentWeatherData.daily.temperature_2m_min.map(temp => Math.round(temp))
 
     return {
         cityName: cityName.value,
@@ -91,7 +101,11 @@ async function formWeatherData(latitude, longitude) {
         todayHourlyTimeFull,
         todayHourlyTimeShort,
         todayHourlyTemperature,
-        todayHourlyWeatherCode
+        todayHourlyWeatherCode,
+        dailyWeekDays,
+        dailyWeatherCode,
+        dailyTempMax,
+        dailyTempMin
     }
 }
 
@@ -205,6 +219,12 @@ function getIconBasedOnTime(weathercode, currentTime, sunrise, sunset) {
     }
 }
 
+function getShortWeekDay(dateStr) {
+    const date = new Date(dateStr)
+    const weekDays = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT']
+    return weekDays[date.getDay()]
+}
+
 function renderWeather({
     cityName,
     temperature,
@@ -228,7 +248,11 @@ function renderWeather({
     todayHourlyTimeFull,
     todayHourlyTimeShort,
     todayHourlyTemperature,
-    todayHourlyWeatherCode
+    todayHourlyWeatherCode,
+    dailyWeekDays,
+    dailyWeatherCode,
+    dailyTempMax,
+    dailyTempMin
 }) {
     const weatherCurrentHTML = buildTemplateWeatherCurrent({
         cityName: cityName.toUpperCase(),
@@ -274,16 +298,31 @@ function renderWeather({
 
     const weatherHourlyHTML = buildTemplateWeatherHourly(weatherHourlyItemHTML)
 
+    let weatherDailyItemHTML = ''
+
+    for (let i = 0; i < dailyWeekDays.length; i++) {
+        weatherDailyItemHTML += buildTemplateWeatherDailyItem({
+            day: dailyWeekDays[i],
+            tempMax: dailyTempMax[i],
+            tempMin: dailyTempMin[i],
+            weatherIconUrl: getWeatherByCode(dailyWeatherCode[i]).iconDay
+        })
+    }
+    const weatherDailyHTML = buildTemplateWeatherDaily(weatherDailyItemHTML)
+
     // Insertion
     const mainWeatherBlock = document.querySelector('.weather__main')
     const hourlyWeatherBlock = document.querySelector('.weather__hourly')
+    const dailyWeatherBlock = document.querySelector('.weather__daily')
 
     mainWeatherBlock.innerHTML = ''
     hourlyWeatherBlock.innerHTML = ''
+    dailyWeatherBlock.innerHTML = ''
 
     mainWeatherBlock.insertAdjacentHTML('beforeend', weatherCurrentHTML)
     mainWeatherBlock.insertAdjacentHTML('beforeend', weatherSummaryHTML)
     hourlyWeatherBlock.insertAdjacentHTML('beforeend', weatherHourlyHTML)
+    dailyWeatherBlock.insertAdjacentHTML('beforeend', weatherDailyHTML)
 }
 
 function showCitySuggestion(cities) {
