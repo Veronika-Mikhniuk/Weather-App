@@ -136,6 +136,9 @@ body::before {
 .weather {
     margin-top: 30px;
     color: white;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 
     &__main {
         display: flex;
@@ -151,7 +154,8 @@ body::before {
         // max-width: 735px;
     }
 
-    &__current {
+    &__current,
+    &__hourly-wrapper {
         display: flex;
         background-color: rgba(54, 128, 193, 0.408);
         border-radius: 20px;
@@ -160,9 +164,7 @@ body::before {
         width: 100%;
     }
 
-    &__hourly {
-        // add later
-    }
+    // &__hourly-wrapper {}
 
     &__summary {
         display: flex;
@@ -175,9 +177,6 @@ body::before {
         // add later
     }
 
-    &__weekly {
-        // add later
-    }
 }
 
 .current {
@@ -245,11 +244,6 @@ body::before {
         gap: 30px;
     }
 
-    // &__sunrise,
-    // &__sunset {
-    //     /* ... */
-    // }
-
     &__sunrise-time,
     &__sunset-time {
         font-size: 25px;
@@ -278,10 +272,6 @@ body::before {
         justify-content: space-between;
     }
 
-    // &__info {
-    //     /* ... */
-    // }
-
     &__temp {
         font-size: 48px;
         line-height: 40px;
@@ -303,4 +293,27 @@ body::before {
     &__icon {
         position: relative;
     }
+}
+
+.hourly {
+    &__item {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        align-items: center;
+    }
+
+    &__hour,
+    &__temp {
+        font-size: 26px;
+        line-height: 30px;
+        margin-bottom: 0;
+    }
+
+    &__icon {
+        img {
+            width: 70px;
+        }
+    }
+
 }

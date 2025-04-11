@@ -1,7 +1,9 @@
 import {
     buildTemplateCitySuggestion,
     buildTemplateWeatherCurrent,
-    buildTemplateWeatherSummary
+    buildTemplateWeatherSummary,
+    buildTemplateWeatherHourly,
+    buildTemplateWeatherHourlyItem
 } from './templates.js'
 
 import {
@@ -16,6 +18,9 @@ import rainIcon from '../sass/img/Icons/rain.png'
 
 let citySelected  // flag for resetting the status so that the city list drops out without refreshing the page
 let debounceTimer // to save the timer ID for the possibility of cancellation
+
+const hourlyWeatherStartTime = 8
+const hourlyWeatherHoursToDisplay = 13
 
 function getCurrentDate() {
     const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
@@ -58,6 +63,11 @@ async function formWeatherData(latitude, longitude) {
         [todayDate, tomorrowDate]
     )
 
+    const todayHourlyTimeFull = currentWeatherData.hourly.time.slice(hourlyWeatherStartTime, hourlyWeatherStartTime + hourlyWeatherHoursToDisplay)
+    const todayHourlyTimeShort = todayHourlyTimeFull.map(timeDate => timeDate.slice(-5, -3))
+    const todayHourlyTemperature = currentWeatherData.hourly.temperature_2m.slice(hourlyWeatherStartTime, hourlyWeatherStartTime + hourlyWeatherHoursToDisplay)
+    const todayHourlyWeatherCode = currentWeatherData.hourly.weather_code.slice(hourlyWeatherStartTime, hourlyWeatherStartTime + hourlyWeatherHoursToDisplay)
+
     return {
         cityName: cityName.value,
         temperature,
@@ -77,7 +87,11 @@ async function formWeatherData(latitude, longitude) {
         humidity,
         pressure,
         visibility,
-        currentTimeDate
+        currentTimeDate,
+        todayHourlyTimeFull,
+        todayHourlyTimeShort,
+        todayHourlyTemperature,
+        todayHourlyWeatherCode
     }
 }
 
@@ -184,18 +198,6 @@ function getIconBasedOnTime(weathercode, currentTime, sunrise, sunset) {
     const sunriseDate = new Date(sunrise)
     const sunsetDate = new Date(sunset)
 
-    console.log(currentTimeDate, sunriseDate, sunsetDate)
-
-    if (currentTimeDate >= sunriseDate && currentTimeDate < sunsetDate) {
-        return getWeatherByCode(weathercode).iconDay // DayIcon
-    } else {
-        return getWeatherByCode(weathercode).iconNight // NightIcon
-    }
-}
-
-function getIconDay(weathercode) {
-
-
     if (currentTimeDate >= sunriseDate && currentTimeDate < sunsetDate) {
         return getWeatherByCode(weathercode).iconDay // DayIcon
     } else {
@@ -222,7 +224,11 @@ function renderWeather({
     humidity,
     pressure,
     visibility,
-    currentTimeDate
+    currentTimeDate,
+    todayHourlyTimeFull,
+    todayHourlyTimeShort,
+    todayHourlyTemperature,
+    todayHourlyWeatherCode
 }) {
     const weatherCurrentHTML = buildTemplateWeatherCurrent({
         cityName: cityName.toUpperCase(),
@@ -256,12 +262,28 @@ function renderWeather({
         tomorrowNightIcon: getWeatherByCode(tomorrowNightWeatherCode).iconNight
     })
 
+    let weatherHourlyItemHTML = ''
+
+    for (let i = 0; i < todayHourlyTimeShort.length; i++) {
+        weatherHourlyItemHTML += buildTemplateWeatherHourlyItem({
+            hour: todayHourlyTimeShort[i],
+            temp: todayHourlyTemperature[i],
+            weatherIconUrl: getIconBasedOnTime(todayHourlyWeatherCode[i], todayHourlyTimeFull[i], sunrise, sunset)
+        })
+    }
+
+    const weatherHourlyHTML = buildTemplateWeatherHourly(weatherHourlyItemHTML)
+
     // Insertion
     const mainWeatherBlock = document.querySelector('.weather__main')
+    const hourlyWeatherBlock = document.querySelector('.weather__hourly')
+
     mainWeatherBlock.innerHTML = ''
+    hourlyWeatherBlock.innerHTML = ''
 
     mainWeatherBlock.insertAdjacentHTML('beforeend', weatherCurrentHTML)
     mainWeatherBlock.insertAdjacentHTML('beforeend', weatherSummaryHTML)
+    hourlyWeatherBlock.insertAdjacentHTML('beforeend', weatherHourlyHTML)
 }
 
 function showCitySuggestion(cities) {

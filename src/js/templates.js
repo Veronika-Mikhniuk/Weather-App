@@ -70,9 +70,6 @@ const buildTemplateWeatherCurrent = ({
                     </div>
                 </div>
             </div>
-            <div class="weather__hourly">
-                <!-- Add later -->
-            </div>  
         </div>`
 }
 
@@ -137,8 +134,30 @@ const buildTemplateWeatherSummary = ({
         </div>`
 }
 
+const buildTemplateWeatherHourly = (hourlyItems) => {
+    return `
+        <div class="weather__hourly-wrapper">
+            ${hourlyItems}
+        </div>
+    `;
+};
+
+const buildTemplateWeatherHourlyItem = ({ hour, temp, weatherIconUrl }) => {
+    return `
+        <div class="hourly hourly__item">
+            <h2 class="hourly__hour">${hour}</h2>
+            <div class="hourly__icon">
+                <img src="${weatherIconUrl}" alt="Hourly icon">
+            </div>
+            <p class="hourly__temp">${temp}°C</p>
+        </div>
+    `
+}
+
 export {
     buildTemplateCitySuggestion,
     buildTemplateWeatherCurrent,
-    buildTemplateWeatherSummary
+    buildTemplateWeatherSummary,
+    buildTemplateWeatherHourly,
+    buildTemplateWeatherHourlyItem
 }
