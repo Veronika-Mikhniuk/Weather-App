@@ -36,7 +36,6 @@ function getCurrentDate() {
 
 async function formWeatherData(latitude, longitude) {
     const currentWeatherData = await getCurrentWeather(latitude, longitude)
-    console.log(currentWeatherData)
 
     const cityName = document.querySelector('#city-search-input')
     const { weather_code, wind_speed_10m: wind, relative_humidity_2m: humidity, surface_pressure: pressure } = currentWeatherData.current

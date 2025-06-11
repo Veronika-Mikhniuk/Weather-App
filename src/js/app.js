@@ -14,6 +14,10 @@ import {
     debounce
 } from './methods.js'
 
+import {
+    loadInitialWeather
+} from './initialization.js'
+
 
 // add event listeners
 // the "input" event is for instant interception of changes, since "change" will be triggered only when focus is lost
@@ -22,3 +26,7 @@ searchForm.addEventListener('input', () => { debounce(handleChangeInputCityName,
 searchForm.addEventListener('submit', handleSubmitFormSearchCity)
 suggestionCityList.addEventListener('click', handleClickDropdownMenu)
 document.addEventListener('click', handleClickOutsideCityList)
+
+document.addEventListener('DOMContentLoaded', () => {
+    loadInitialWeather();
+})
