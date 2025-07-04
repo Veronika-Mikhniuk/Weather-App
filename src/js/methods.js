@@ -21,8 +21,8 @@ import rainIcon from '../sass/img/Icons/rain.png'
 let citySelected  // flag for resetting the status so that the city list drops out without refreshing the page
 let debounceTimer // to save the timer ID for the possibility of cancellation
 
-const hourlyWeatherStartTime = 8
-const hourlyWeatherHoursToDisplay = 13
+const hourlyWeatherStartTime = 9
+const hourlyWeatherHoursToDisplay = 12
 
 function getCurrentDate() {
     const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
